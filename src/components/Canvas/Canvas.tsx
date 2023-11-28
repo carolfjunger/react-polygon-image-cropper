@@ -73,7 +73,7 @@ const Canvas = ({
 
   useEffect(() => {
     const handleCrop = () => {
-      cropImage(imageCanvasRef, cropCanvasRef, handles);
+      cropImage(imageCanvasRef, cropCanvasRef, handles, color);
       setCropped(true);
     };
     const cropRef = cropEvent?.elementRef;
@@ -167,11 +167,12 @@ const Canvas = ({
     const cropCanvas = cropCanvasRef.current;
     if (cropCanvas) {
       const cropContext = cropCanvas.getContext('2d');
+      console.log({ cropContext })
       if (cropped) {
-        cropImage(imageCanvasRef, cropCanvasRef, handles);
+        cropImage(imageCanvasRef, cropCanvasRef, handles, color);
       } else {
         cropContext?.clearRect(0, 0, cropCanvas.width, cropCanvas.height);
-        handles.forEach((_, idx) => drawLine(handles, idx, cropContext));
+        handles.forEach((_, idx) => drawLine(handles, idx, cropContext, color));
       }
     }
   }, [handles, cropped]);

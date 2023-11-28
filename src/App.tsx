@@ -26,8 +26,8 @@ function App() {
         width={500}
         height={500}
         source={source}
-        radius={30}
-        color="red"
+        radius={20}
+        color="#FDFD05"
         canCrop={canCrop}
         cropEvent={{ elementRef: buttonRef, eventType: 'click' }}
         rescaleEvent={{ elementRef: rescaleRef, eventType: 'click' }}
@@ -39,7 +39,7 @@ function App() {
           alignItems: 'center',
         }}
       />
-      <input type="file" accept="image/png" onChange={(e) => handleImage(e)} />
+      <input type="file" accept="image/jpeg" onChange={(e) => handleImage(e)} />
       <button onClick={() => setCanCrop(true)}>Start Cropping</button>
       <button ref={buttonRef}>Crop</button>
       <button ref={rescaleRef}>Rescale</button>

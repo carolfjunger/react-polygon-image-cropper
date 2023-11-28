@@ -1,6 +1,6 @@
 import { HandleProps } from '../components/Handle/Handle';
 
-export function drawLine(handles: Array<HandleProps>, idx: number, ctx: any) {
+export function drawLine(handles: Array<HandleProps>, idx: number, ctx: any, color : string) {
   ctx.beginPath();
   ctx.moveTo(handles[idx].x, handles[idx].y);
   if (idx === handles.length - 1) {
@@ -8,6 +8,8 @@ export function drawLine(handles: Array<HandleProps>, idx: number, ctx: any) {
   } else {
     ctx.lineTo(handles[idx + 1].x, handles[idx + 1].y);
   }
+  ctx.lineWidth = 8
+  ctx.strokeStyle = color
   ctx.stroke();
 }
 
@@ -29,7 +31,8 @@ export function checkProximity(
 export function cropImage(
   imageCanvasRef: React.RefObject<HTMLCanvasElement>,
   cropCanvasRef: React.RefObject<HTMLCanvasElement>,
-  handles: Array<HandleProps>
+  handles: Array<HandleProps>,
+  color : string,
 ) {
   if (cropCanvasRef.current && imageCanvasRef.current) {
     const imageCtx = imageCanvasRef.current.getContext('2d');
@@ -44,6 +47,9 @@ export function cropImage(
         } else {
           ctx.lineTo(handles[idx + 1].x, handles[idx + 1].y);
         }
+        ctx.lineWidth = 8
+        ctx.strokeStyle = color
+        ctx.stroke();
       });
       ctx.clip();
       ctx.drawImage(
