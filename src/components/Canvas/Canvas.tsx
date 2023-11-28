@@ -33,6 +33,7 @@ interface CanvasProps {
   color: string;
   draggable?: boolean;
   proximity?: number;
+  canCrop?: boolean;
   cropEvent?: EventListenerProps;
   resetEvent?: EventListenerProps;
   rescaleEvent?: EventListenerProps;
@@ -49,6 +50,7 @@ const Canvas = ({
   color,
   draggable = true,
   proximity,
+  canCrop,
   cropEvent,
   resetEvent,
   rescaleEvent,
@@ -142,8 +144,8 @@ const Canvas = ({
             image,
             0,
             0,
-            image.width * window.devicePixelRatio,
-            image.height * window.devicePixelRatio,
+            image.width,
+            image.height,
             0,
             0,
             canvas.width,
@@ -177,7 +179,7 @@ const Canvas = ({
   const handleClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
     e.preventDefault();
     const cropCanvas = cropCanvasRef.current;
-    if (cropCanvas) {
+    if (canCrop && cropCanvas) {
       const rect = cropCanvas.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
@@ -204,7 +206,7 @@ const Canvas = ({
       className="react-polygon-bounding-box"
       style={{ height: height, width: width, ...styles }}>
       <canvas
-        style={{ height: height, width: width }}
+        style={{ height: height, width: width}}
         className="react-polygon-image-canvas"
         hidden={cropped}
         ref={imageCanvasRef}

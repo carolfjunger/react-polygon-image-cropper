@@ -5,6 +5,7 @@ import { Canvas } from '.';
 function App() {
   const [url, setUrl] = useState('');
   const [source, setSource] = useState<any>('');
+  const [canCrop, setCanCrop] = useState<any>(false);
   const buttonRef = useRef(null);
   const resetRef = useRef(null);
   const rescaleRef = useRef(null);
@@ -27,6 +28,7 @@ function App() {
         source={source}
         radius={30}
         color="red"
+        canCrop={canCrop}
         cropEvent={{ elementRef: buttonRef, eventType: 'click' }}
         rescaleEvent={{ elementRef: rescaleRef, eventType: 'click' }}
         resetEvent={{ elementRef: resetRef, eventType: 'click' }}
@@ -38,6 +40,7 @@ function App() {
         }}
       />
       <input type="file" accept="image/png" onChange={(e) => handleImage(e)} />
+      <button onClick={() => setCanCrop(true)}>Start Cropping</button>
       <button ref={buttonRef}>Crop</button>
       <button ref={rescaleRef}>Rescale</button>
       <button ref={resetRef}>Reset</button>
