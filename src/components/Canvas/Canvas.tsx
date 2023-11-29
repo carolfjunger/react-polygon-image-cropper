@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Handle, HandleProps } from '../Handle/Handle';
+import { concat } from "lodash"
 import './Canvas.css';
 import {
   checkProximity,
@@ -37,9 +38,15 @@ interface CanvasProps {
   cropEvent?: EventListenerProps;
   resetEvent?: EventListenerProps;
   rescaleEvent?: EventListenerProps;
+  undoEvent?: EventListenerProps;
+  redoEvent?: EventListenerProps;
   saveProps?: SaveProps;
   styles?: React.CSSProperties;
   customCallback?: CustomCallbackProps;
+  previousHandles: Array<Array<HandleProps>>; 
+  setPreviousHandles: React.Dispatch<React.SetStateAction<HandleProps[][]>>,
+  selectedHandle: number,
+  setSelectedHandle: React.Dispatch<React.SetStateAction<number>>
 }
 
 const Canvas = ({
@@ -54,6 +61,11 @@ const Canvas = ({
   cropEvent,
   resetEvent,
   rescaleEvent,
+  undoEvent,
+  setPreviousHandles,
+  previousHandles,
+  selectedHandle,
+  setSelectedHandle,
   saveProps,
   styles,
   customCallback,
@@ -88,6 +100,8 @@ const Canvas = ({
       clearCanvas(cropCanvasRef);
       clearCanvas(finalCanvasRef);
       setHandles([]);
+      setPreviousHandles([])
+      setSelectedHandle(-1)
       setCropped(false);
       setScaled(false);
     };
@@ -97,6 +111,25 @@ const Canvas = ({
     }
     return () => resetRef?.current?.removeEventListener('click', handleReset);
   }, [resetEvent]);
+
+  useEffect(() => {
+    const handleUndo = () => {
+      const newSelectedHandle = selectedHandle - 1
+      if(newSelectedHandle < 0){
+        setHandles([]);
+        setPreviousHandles([])
+      } else {
+        const newHandles = previousHandles[newSelectedHandle]
+        setHandles(newHandles)
+      }
+      setSelectedHandle(newSelectedHandle)
+    };
+    const undoRef = undoEvent?.elementRef;
+    if (undoRef && undoRef.current) {
+      undoRef.current.addEventListener('click', handleUndo);
+    }
+    return () => undoRef?.current?.removeEventListener('click', handleUndo);
+  }, [undoEvent]);
 
   useEffect(() => {
     const handleScale = () => {
@@ -167,7 +200,6 @@ const Canvas = ({
     const cropCanvas = cropCanvasRef.current;
     if (cropCanvas) {
       const cropContext = cropCanvas.getContext('2d');
-      console.log({ cropContext })
       if (cropped) {
         cropImage(imageCanvasRef, cropCanvasRef, handles, color);
       } else {
@@ -188,10 +220,10 @@ const Canvas = ({
         !checkProximity(handles, { x: x, y: y }, proximity || 0) &&
         !cropped
       ) {
-        setHandles((prev) => [
-          ...prev,
-          { x: x, y: y, radius: radius, color: color },
-        ]);
+        const newHandle = concat(handles, { x: x, y: y, radius: radius, color: color })
+        setHandles(newHandle);
+        setPreviousHandles((prev) => [...prev, newHandle])
+        setSelectedHandle((prev) => prev + 1)
       }
     }
   };
