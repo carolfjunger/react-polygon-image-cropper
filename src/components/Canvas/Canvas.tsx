@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Handle, HandleProps } from '../Handle/Handle';
-import { concat } from "lodash"
+import { concat, dropRight } from "lodash"
 import './Canvas.css';
 import {
   checkProximity,
@@ -62,6 +62,7 @@ const Canvas = ({
   resetEvent,
   rescaleEvent,
   undoEvent,
+  redoEvent,
   setPreviousHandles,
   previousHandles,
   selectedHandle,
@@ -130,6 +131,25 @@ const Canvas = ({
     }
     return () => undoRef?.current?.removeEventListener('click', handleUndo);
   }, [undoEvent]);
+
+  useEffect(() => {
+    const handleRedo = () => {
+      const newSelectedHandle = selectedHandle + 1
+      if(newSelectedHandle < previousHandles.length) {
+        const newHandles = previousHandles[newSelectedHandle]
+        setHandles(newHandles)
+        setSelectedHandle(newSelectedHandle)
+      }
+    };
+    const redoRef = redoEvent?.elementRef;
+    if (redoRef && redoRef.current) {
+      redoRef.current.addEventListener('click', handleRedo);
+    }
+
+    console.log({ previousHandles, selectedHandle, handles })
+
+    return () => redoRef?.current?.removeEventListener('click', handleRedo);
+  }, [redoEvent]);
 
   useEffect(() => {
     const handleScale = () => {
@@ -222,7 +242,12 @@ const Canvas = ({
       ) {
         const newHandle = concat(handles, { x: x, y: y, radius: radius, color: color })
         setHandles(newHandle);
-        setPreviousHandles((prev) => [...prev, newHandle])
+        if(selectedHandle == previousHandles.length - 1) { // check if can add handles to memory
+          setPreviousHandles((prev) => [...prev, newHandle])
+        } else {
+          const newPreviousHandles = dropRight(previousHandles, previousHandles.length - (selectedHandle + 1))
+          setPreviousHandles([...newPreviousHandles, newHandle])
+        }
         setSelectedHandle((prev) => prev + 1)
       }
     }

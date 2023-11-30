@@ -61,7 +61,7 @@ function App() {
       <button ref={resetRef}>Reset</button>
       <button ref={saveRef}>Save</button>
       <button ref={undoRef} disabled={selectedHandle < 0} >Undo</button>
-      <button ref={redoRef}>Redo</button>
+      <button ref={redoRef} disabled={previousHandles.length < 2 || selectedHandle == previousHandles.length - 1}>Redo</button>
       <img src={url} />
     </div>
   );
