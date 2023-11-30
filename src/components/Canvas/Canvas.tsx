@@ -88,6 +88,8 @@ const Canvas = ({
     const handleCrop = () => {
       cropImage(imageCanvasRef, cropCanvasRef, handles, color);
       setCropped(true);
+      setPreviousHandles([handles])
+      setSelectedHandle(0)
     };
     const cropRef = cropEvent?.elementRef;
     if (cropRef && cropRef.current) {
